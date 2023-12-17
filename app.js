@@ -3,6 +3,7 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
+const fetch = require('node-fetch');
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
@@ -21,6 +22,17 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+
+app.get('/cats/fact', async (req, res) => {
+  try {
+    const response = await fetch('https://catfact.ninja/fact');
+    const data = await response.json();
+    const catFact = data.fact;
+    res.render('cat/fact', { catFact });
+  } catch (error) {
+    res.send('Error fetching cat fact');
+  }
+});
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
